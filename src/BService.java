@@ -1,75 +1,91 @@
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
 
-
-//processing routine on server (B)
 public class BService implements Runnable {
-	final int CLIENT_PORT = 5656;
+    private Socket clientSocket;
+    private BufferedReader in;
+    private PrintWriter out;
 
-	private Socket s;
-	private Scanner in;
+    public BService(Socket clientSocket) throws IOException {
+        this.clientSocket = clientSocket;
+        this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        this.out = new PrintWriter(clientSocket.getOutputStream(), true);
+    }
 
-	public BService (Socket aSocket) {
-		this.s = aSocket;
-	}
-	public void run() {
-		
-		try {
-			in = new Scanner(s.getInputStream());
-			processRequest( );
-		} catch (IOException e){
-			e.printStackTrace();
-		} finally {
-			try {
-				s.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-	}
-	//processing the requests
-	public void processRequest () throws IOException {
-		//if next request is empty then return
-		while(true) {
-			if(!in.hasNext( )){
-				return;
-			}
-			String command = in.next();
-			if (command.equals("Quit")) {
-				return;
-			} else {
-				executeCommand(command);
-			}
-		}
-	}
-	
-	public void executeCommand(String command) throws IOException{
-	
-		
-		if ( command.equals("PLAYER")) {
-			int playerNo = in.nextInt();
-			String playerAction = in.next();
-			System.out.println("Player "+playerNo+" moves "+playerAction);
-			
-			
-			//send a response
-			Socket s2 = new Socket("localhost", CLIENT_PORT);
-			
-			//Initialize data stream to send data out
-			OutputStream outstream = s2.getOutputStream();
-			PrintWriter out = new PrintWriter(outstream);
+    @Override
+    public void run() {
+        try {
+            handleClient();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-			String commandOut = "PLAYER "+playerNo+" POSTION 500 400\n";
-			System.out.println("Sending: " + commandOut);
-			out.println(commandOut);
-			out.flush();
-				
-			s2.close();
+    private void handleClient() throws IOException {
+        String inputLine;
+        while ((inputLine = in.readLine()) != null) {
+            System.out.println("Received command from client: " + inputLine);
+            processCommand(inputLine);
+        }
+    }
 
-		}
-	}
+    private void processCommand(String command) {
+        switch (command.trim()) {
+            case "UP":
+                // 
+                break;
+            case "DOWN":
+                // 
+                break;
+            case "LEFT":
+                //
+                break;
+            case "RIGHT":
+                // 
+                break;
+            case "STARTGAME":
+                // 
+                break;
+            case "RESTARTGAME":
+                // 
+                break;
+            default:
+                System.out.println("Unknown command: " + command);
+                break;
+        }
+    }
+    
+    private void moveFrogUp() {
+        
+    }
+
+    private void moveFrogDown() {
+        
+    }
+
+    private void moveFrogLeft() {
+       
+    }
+
+    private void moveFrogRight() {
+        
+    }
+
+    private void startGame() {
+       
+    }
+
+    private void restartGame() {
+        
+    }
 }
